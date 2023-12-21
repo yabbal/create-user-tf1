@@ -49,9 +49,16 @@ export const createEmail = async (email: string) => {
 export const clickConfirmationLink = async (email: string) => {
   try {
     const listMail = await mailsac.messages.listMessages(email);
-
-    await fetch(listMail.data.at(0)?.links?.at(2)!);
-    console.log("Clicked on confirmation link");
+    const confirmationLink = listMail.data
+      .at(0)
+      ?.links?.filter((link) => link.includes("accounts.eu1.gigya"))
+      .at(0);
+    if (confirmationLink) {
+      await fetch(confirmationLink);
+      console.log("Clicked on confirmation link");
+    } else {
+      throw new Error("No confirmation link found");
+    }
   } catch (error) {
     console.error(error);
     console.error("Error while clicking on confirmation link");
